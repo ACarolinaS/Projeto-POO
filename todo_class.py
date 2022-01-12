@@ -4,13 +4,29 @@ import csv
 import datetime
 
 def create_csv(filename):
-    pass
+    with open(filename, 'w', encoding='utf-8-sig', newline='') as csvfile:
+        spamwriter = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        spamwriter.writerow(['título', 'descrição', 'dia', 'mês', 'ano', 'status'])
 
 def add_to_csv(filename, row):
-    pass
+    with open(filename, 'a', encoding='utf-8-sig', newline='') as csvfile:
+        spamwriter = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        spamwriter.writerow(row)
 
 def check_task_csv(filename, date):
-    pass
+    print(f'As tarefas para o dia {date} é/são: \n')
+    no_tasks = True
+    day, month, year = date.split('/')
+
+    with open(filename, 'r', encoding='utf-8-sig') as csvfile:
+        csvreader = csv.reader(csvfile, delimiter=';', quotechar='|')
+        for row in csvreader:
+            if [row[2], row[3], row[4]] == [day, month, year]:
+                print(row[0])
+                no_tasks = False
+
+    if no_tasks:
+        print(f'Não há tarefas para o dia {date}.')
 
 def update_tasklist_on_csv(filename, title, type_of_modification='status'):
     
@@ -100,3 +116,9 @@ class ToDoList:
             update_tasklist_on_csv(self.filename, title, type_of_modification = 'remove')
         else:
             print(f'A tarefa {title} não existe.')
+            
+    def view_all_tasks(self):
+        for tarefa in self.dict_of_tasks:
+            print(f'Tarefa: {tarefa}')
+            for key, value in self.dict_of_tasks[tarefa].items():
+                print(f'    {key}: {value}')
