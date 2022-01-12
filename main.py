@@ -43,8 +43,7 @@ while True:
         clear()
         
     elif option == 4:
-        p.date = input(msg = 'Qual a data de entrega da tarefa que deseja buscar (DD/MM/YYYY) [hoje/amanhã]: ', color = 'BLUE').lower() 
-        
+        date = input('Qual a data de entrega da tarefa que deseja buscar (DD/MM/YYYY) [hoje/amanhã]: ').lower() 
 
         if date == 'hoje':
             date = datetime.datetime.now().strftime('%d/%m/%Y')
