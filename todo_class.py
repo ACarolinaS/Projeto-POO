@@ -1,3 +1,8 @@
+from tempfile import NamedTemporaryFile
+import shutil
+import csv
+import datetime
+
 def create_csv(filename):
     pass
 
@@ -8,11 +13,44 @@ def check_task_csv(filename, date):
     pass
 
 def update_tasklist_on_csv(filename, title, type_of_modification='status'):
-    pass
+    
+    replace_file = True
+    tempfile = NamedTemporaryFile(mode='w', delete=False, newline='', encoding='utf-8-sig')
+
+    with open(filename, 'r') as csvfile, tempfile:
+        reader = csv.reader(csvfile, delimiter=';')
+        writer = csv.writer(tempfile, delimiter=';')
+        for row in reader:
+            try:
+                if type_of_modification == 'status':
+                    if row[0] == title:
+                        print('atualizando tarefa', row[0])
+                        row[-1] = 'concluída'
+                    writer.writerow(row)
+
+                elif type_of_modification == 'remove':
+                    if row[0] != title:
+                        writer.writerow(row)
+
+                else:
+                    replace_file = False
+                    print('modificação não reconhecida')
+
+            except:
+                pass
+
+    if replace_file:
+        shutil.move(tempfile.name, filename)
+        print('Arquivo atualizado com sucesso.')
 
 def insert_valid_date():
-    pass
-
+    try:
+        date = input('Data de entrega (DD/MM/YYYY): ').split('/')
+        day, month, year = date
+    except:
+        print('Data inválida. Tente novamente.')
+        return insert_valid_date()
+    return day, month, year
 class ToDoList:
 
     dict_of_tasks = {}
@@ -41,17 +79,17 @@ class ToDoList:
                     }
                 })
             add_to_csv('tasks.csv', task)
-            print(msg = 'Tarefa adicionada com sucesso.', color = 'GREEN')
+            print('Tarefa adicionada com sucesso.')
 
         else:
-            print(msg = 'Tarefa já existe.', color = 'BOLD')
+            print('Tarefa já existe.')
 
     def finish_task(self, title):
         try:
             self.dict_of_tasks[title]['status'] = 'concluída'
             update_tasklist_on_csv(self.filename, title, type_of_modification = 'status')
         except KeyError as e:
-            print(msg = f'A tarefa {title} não existe. - {e}', color = 'BOLD')
+            print(f'A tarefa {title} não existe. - {e}')
 
     def view_tasks(self, date):
         check_task_csv(self.filename, date)
@@ -61,4 +99,4 @@ class ToDoList:
             del self.dict_of_tasks[title]
             update_tasklist_on_csv(self.filename, title, type_of_modification = 'remove')
         else:
-            print(msg = f'A tarefa {title} não existe.', color = 'RED')
+            print(f'A tarefa {title} não existe.')
