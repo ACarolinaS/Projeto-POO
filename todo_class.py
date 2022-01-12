@@ -26,7 +26,7 @@ def check_task_csv(filename, date):
                 no_tasks = False
 
     if no_tasks:
-        print(f'Não há tarefas para o dia {date}.')
+        p.print(msg = f'Não há tarefas para o dia {date}.', color = 'BLUE')
 
 def update_tasklist_on_csv(filename, title, type_of_modification='status'):
     
@@ -57,14 +57,14 @@ def update_tasklist_on_csv(filename, title, type_of_modification='status'):
 
     if replace_file:
         shutil.move(tempfile.name, filename)
-        print('Arquivo atualizado com sucesso.')
+        p.print(msg = 'Arquivo atualizado com sucesso.', color = 'GREEN')
 
 def insert_valid_date():
     try:
         date = input('Data de entrega (DD/MM/YYYY): ').split('/')
         day, month, year = date
     except:
-        print('Data inválida. Tente novamente.')
+        p.print(msg = 'Data inválida. Tente novamente.', color = 'BOLD')
         return insert_valid_date()
     return day, month, year
 class ToDoList:
@@ -95,17 +95,17 @@ class ToDoList:
                     }
                 })
             add_to_csv('tasks.csv', task)
-            print('Tarefa adicionada com sucesso.')
+            p.print(msg = 'Tarefa adicionada com sucesso.', color = 'GREEN')
 
         else:
-            print('Tarefa já existe.')
+            p.print(msg = 'Tarefa já existe.', color = 'BOLD')
 
     def finish_task(self, title):
         try:
             self.dict_of_tasks[title]['status'] = 'concluída'
             update_tasklist_on_csv(self.filename, title, type_of_modification = 'status')
         except KeyError as e:
-            print(f'A tarefa {title} não existe. - {e}')
+            p.print(msg = f'A tarefa {title} não existe. - {e}', color = 'BOLD')
 
     def view_tasks(self, date):
         check_task_csv(self.filename, date)
@@ -122,3 +122,33 @@ class ToDoList:
             print(f'Tarefa: {tarefa}')
             for key, value in self.dict_of_tasks[tarefa].items():
                 print(f'    {key}: {value}')
+
+class Printer:
+    _colors_ = {
+        "RED": "\033[1;31m",
+        "GREEN": "\033[0;32m",
+        "YELLOW": "\033[0;93m",
+        "BLUE": "\033[1;34m",
+        "CYAN": "\033[1;36m",
+        "RESET": "\033[0;0m",
+        "BOLD": "\033[;1m",
+        'MAGENTA': "\033[1;35m",
+        "MAGENTAC": "\033[1;95m",
+        "REVERSE": "\033[;7m"
+    }
+    
+    def _get_color_(self, key):
+        """Gets the corresponding color ANSI code... """
+        try:
+            return self._colors_[key]
+        except:
+            return self._colors_["REVERSE"]
+        
+    def print(self, msg , color="REVERSE"):
+        """Main print function..."""
+
+        color = self._get_color_(key=color)
+
+        print("{}{}{}".format(color, msg, self._colors_["REVERSE"]))
+
+p = Printer()
