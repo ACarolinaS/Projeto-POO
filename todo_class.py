@@ -28,12 +28,12 @@ def check_task_csv(filename, date):
     if no_tasks:
         p.print(msg = f'Não há tarefas para o dia {date}.', color = 'BLUE')
 
-def update_tasklist_on_csv(filename, title, type_of_modification='status'):
+def update_tasklist_on_csv(filename, title, type_of_modification):
     
     replace_file = True
     tempfile = NamedTemporaryFile(mode='w', delete=False, newline='', encoding='utf-8-sig')
 
-    with open(filename, 'r') as csvfile, tempfile:
+    with open(filename, 'r', newline='', encoding='utf-8-sig') as csvfile, tempfile:
         reader = csv.reader(csvfile, delimiter=';')
         writer = csv.writer(tempfile, delimiter=';')
         for row in reader:
